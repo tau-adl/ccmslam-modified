@@ -653,6 +653,7 @@ void Viewer::PubKeyFramesAsFrusta()
         cv::Mat p4w = Twc*p4;
 
         geometry_msgs::Point msgs_o,msgs_p1, msgs_p2, msgs_p3, msgs_p4;
+//        geometry_msgs::Point msgs_p1, msgs_p2, msgs_p3, msgs_p4;
         msgs_o.x=(fScale)*ow.at<float>(0);
         msgs_o.y=(fScale)*ow.at<float>(1);
         msgs_o.z=(fScale)*ow.at<float>(2);
@@ -1485,6 +1486,8 @@ void Viewer::PubFramePoseAsFrustum()
     msgs_p4.x=(fScale)*p4w.at<float>(0);
     msgs_p4.y=(fScale)*p4w.at<float>(1);
     msgs_p4.z=(fScale)*p4w.at<float>(2);
+
+    msg_point_out = msgs_o;
 
     Frame.points.push_back(msgs_o);
     Frame.points.push_back(msgs_p1);

@@ -128,6 +128,10 @@ public:
     list<kfptr> mlpReferences;
     list<double> mlFrameTimes;
     list<bool> mlbLost;
+	frameptr mLastFrame;
+
+    // number of times lost tracking in a row
+    int lost_tracking_counter;
 
     void Reset();
 
@@ -186,9 +190,11 @@ protected:
     //Current matches in frame
     int mnMatchesInliers;
 
+
+
     //Last Frame, KeyFrame and Relocalisation Info
     kfptr mpLastKeyFrame;
-    frameptr mLastFrame;
+    //frameptr mLastFrame;
     idpair mLastKeyFrameId;
     idpair mLastRelocFrameId;
 

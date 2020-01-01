@@ -59,6 +59,7 @@ public:
     typedef boost::shared_ptr<Map> mapptr;
 public:
     ClientSystem(ros::NodeHandle Nh, ros::NodeHandle NhPrivate, const string &strVocFile, const string &strCamFile);
+    chptr mpAgent;
 
 private:
     void LoadVocabulary(const string &strVocFile);
@@ -73,7 +74,8 @@ private:
     const string mstrCamFile;
     dbptr mpKFDB;
     mapptr mpMap;
-    chptr mpAgent;
+    threadptr ptrPoseStamped;
+
 
     const uidptr mpUID;
 };

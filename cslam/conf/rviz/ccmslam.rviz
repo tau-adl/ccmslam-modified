@@ -69,12 +69,12 @@ Visualization Manager:
       Update Interval: 0
       Value: true
     - Class: rviz/Marker
-      Enabled: false
+      Enabled: true
       Marker Topic: /ccmslam/ClientMarkerMap0
       Name: MarkerC0
       Namespaces:
         {}
-      Queue Size: 100
+      Queue Size: 1000
       Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -88,7 +88,7 @@ Visualization Manager:
       Color: 0; 0; 0
       Color Transformer: RGB8
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -107,12 +107,12 @@ Visualization Manager:
       Use rainbow: true
       Value: false
     - Class: rviz/Marker
-      Enabled: false
+      Enabled: true
       Marker Topic: /ccmslam/ClientMarkerMap1
       Name: MarkerC1
       Namespaces:
         {}
-      Queue Size: 100
+      Queue Size: 1000
       Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -126,7 +126,7 @@ Visualization Manager:
       Color: 0; 0; 0
       Color Transformer: RGB8
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -221,7 +221,7 @@ Visualization Manager:
       Use rainbow: true
       Value: false
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ccmslam/ServerMarkerMap0
       Name: MarkerS0
       Namespaces:
@@ -240,7 +240,7 @@ Visualization Manager:
       Color: 85; 255; 0
       Color Transformer: RGB8
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -259,7 +259,7 @@ Visualization Manager:
       Use rainbow: true
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ccmslam/ServerMarkerMap1
       Name: MarkerS1
       Namespaces:
@@ -278,7 +278,7 @@ Visualization Manager:
       Color: 0; 0; 0
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 0; 255; 0
       Max Intensity: 4096
@@ -297,7 +297,7 @@ Visualization Manager:
       Use rainbow: true
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ccmslam/ServerMarkerMap2
       Name: MarkerS2
       Namespaces:
@@ -316,7 +316,7 @@ Visualization Manager:
       Color: 0; 0; 0
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -335,7 +335,7 @@ Visualization Manager:
       Use rainbow: true
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ccmslam/ServerMarkerMap3
       Name: MarkerS3
       Namespaces:
@@ -354,7 +354,7 @@ Visualization Manager:
       Color: 0; 0; 255
       Color Transformer: Intensity
       Decay Time: 1
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -373,7 +373,7 @@ Visualization Manager:
       Use rainbow: true
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ccmslam/LoopMarker0
       Name: LoopMarker0
       Namespaces:
@@ -381,7 +381,7 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ccmslam/LoopMarker1
       Name: LoopMarker1
       Namespaces:
@@ -389,7 +389,7 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ccmslam/LoopMarker2
       Name: LoopMarker2
       Namespaces:
@@ -397,7 +397,7 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ccmslam/LoopMarker3
       Name: LoopMarker3
       Namespaces:
@@ -405,7 +405,7 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ccmslam/MapMatcherMarkers
       Name: MapMatchMarkers
       Namespaces:

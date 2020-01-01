@@ -108,6 +108,8 @@ public:
     //Reset
     void RequestReset();
 
+    geometry_msgs::Point msg_point_out;
+
 private:
 
     //ROS

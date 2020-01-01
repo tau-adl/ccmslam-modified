@@ -52,6 +52,10 @@
 #include <cslam/LoopFinder.h>
 #include <cslam/Viewer.h>
 #include <cslam/Tracking.h>
+#include <ros/ros.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 //Thirdparty
 #include "thirdparty/g2o/g2o/types/types_seven_dof_expmap.h"
@@ -82,6 +86,7 @@ public:
     typedef boost::shared_ptr<CentralControl> ccptr;
     typedef boost::shared_ptr<KeyFrameDatabase> dbptr;
     typedef boost::shared_ptr<KeyFrame> kfptr;
+    bool receivedImageFlag;
 public:
     ClientHandler(ros::NodeHandle Nh, ros::NodeHandle NhPrivate, vocptr pVoc, dbptr pDB, mapptr pMap, size_t ClientId, uidptr pUID, eSystemState SysState, const string &strCamFile, viewptr pViewer);
     #ifdef LOGGING
@@ -93,6 +98,7 @@ public:
     //---getter/setter---
     void SetMapMatcher(matchptr pMatch);
     void ChangeMap(mapptr pMap, g2o::Sim3 g2oS_wnewmap_wcurmap);
+    void PublishPoseThread();
     commptr GetCommPtr(){return mpComm;}
     trackptr GetTrackPtr(){return mpTracking;}
     mappingptr GetMappingPtr(){return mpMapping;}
@@ -108,6 +114,13 @@ public:
     //---Agent side---
     void CamImgCb(sensor_msgs::ImageConstPtr pMsg);
     void Reset();
+    //agent only
+    trackptr mpTracking;
+
+//    void PublishPositionAsPoseStamped (cv::Mat position);
+//    tf::Transform TransformFromMat (cv::Mat position_mat);
+
+//    cv::Mat position_;
 
 //    #ifdef LOGGING
 //    void SetLogger(boost::shared_ptr<estd::mylog> pLogger);
@@ -123,6 +136,8 @@ private:
     void InitializeServer();
 
     //infrastructure
+    ros::Time current_frame_time_;
+    ros::Publisher mPubPose;
     ccptr mpCC;
     mapptr mpMap;
     dbptr mpKFDB;
@@ -130,8 +145,7 @@ private:
     commptr mpComm;
     mappingptr mpMapping;
     viewptr mpViewer;
-    //agent only
-    trackptr mpTracking;
+
     //server only
     lfptr mpLoopFinder;
     matchptr mpMapMatcher;
@@ -149,6 +163,7 @@ private:
     threadptr mptComm;
     threadptr mptLoopClosure;
     threadptr mptViewer;
+    threadptr ptrPoseStamped;
 
     //data
     size_t mClientId;

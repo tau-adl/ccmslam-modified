@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 
     boost::shared_ptr<cslam::ClientSystem> pCSys{new cslam::ClientSystem(Nh,NhPrivate,argv[1],argv[2])};
 
-    ROS_INFO("Started CSLAM client node...");
+    ROS_INFO("Started CSLAM client node... Matan");
 
     ros::Rate r(params::timings::client::miRosRate);
     while(ros::ok())

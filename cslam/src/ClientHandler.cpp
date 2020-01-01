@@ -157,6 +157,13 @@ void ClientHandler::InitializeClient()
 {
     cout << "Client " << mClientId << " --> Initialize Threads" << endl;
 
+    //  Pose Publisher
+    std::stringstream* ss;
+    ss = new stringstream;
+    *ss << "PoseOut" << "Client" << mClientId;
+    string PubPoseTopicName = ss->str();
+    mPubPose = mNh.advertise<geometry_msgs::PoseStamped>(PubPoseTopicName, 1);
+
     //+++++ Create Drawers. These are used by the Viewer +++++
     mpViewer.reset(new Viewer(mpMap,mpCC));
     usleep(10000);
@@ -183,7 +190,9 @@ void ClientHandler::InitializeClient()
     mptMapping.reset(new thread(&LocalMapping::RunClient,mpMapping));
     mptComm.reset(new thread(&Communicator::RunClient,mpComm));
     mptViewer.reset(new thread(&Viewer::RunClient,mpViewer));
+//    ptrPoseStamped.reset(new thread(&ClientHandler::PublishPoseThread, mpTracking));
     usleep(10000);
+
 }
 
 void ClientHandler::InitializeServer()
@@ -286,7 +295,55 @@ void ClientHandler::CamImgCb(sensor_msgs::ImageConstPtr pMsg)
         }
     }
 
+//    position_ = mpTracking->GrabImageMonocular(cv_ptr->image,cv_ptr->header.stamp.toSec());
     mpTracking->GrabImageMonocular(cv_ptr->image,cv_ptr->header.stamp.toSec());
+
+    if (mpTracking->lost_tracking_counter == 0) {
+        receivedImageFlag = true;
+    }
+}
+
+void ClientHandler::PublishPoseThread(){
+    geometry_msgs::PoseStamped pose_msg;
+    tf2::Quaternion tfQuaternion;
+    geometry_msgs::Quaternion quat_msg;
+    cv::Mat Tcw;
+    cv::Mat Rcw;
+
+    pose_msg.header.frame_id = "world";
+    while(1) {
+//        usleep(33333);
+        usleep(3333);
+        if (receivedImageFlag) {
+            receivedImageFlag = false;
+            if (mpTracking->mState == mpTracking->OK) {
+
+
+                Tcw = mpTracking->mCurrentFrame->mTcw;
+
+                if (Tcw.dims >= 2) {
+
+
+                    Rcw = Tcw.rowRange(0, 3).colRange(0, 3);
+
+                    double pitch = std::atan2(Rcw.at<float>(2, 0), Rcw.at<float>(2, 1));
+                    double roll = std::acos(Rcw.at<float>(2, 2));
+                    double yaw = -std::atan2(Rcw.at<float>(0, 2), Rcw.at<float>(1, 2));
+
+                    tfQuaternion.setRPY(pitch, roll, yaw);
+                    quat_msg = tf2::toMsg(tfQuaternion);
+
+
+                    pose_msg.pose.position.x = mpViewer->msg_point_out.z;
+                    pose_msg.pose.position.y = -mpViewer->msg_point_out.x;
+                    pose_msg.pose.position.z = -mpViewer->msg_point_out.y;
+                    pose_msg.header.stamp = ros::Time::now();
+                    pose_msg.pose.orientation = quat_msg;
+                    mPubPose.publish(pose_msg);
+                }
+            }
+        }
+    }
 }
 
 void ClientHandler::Reset()

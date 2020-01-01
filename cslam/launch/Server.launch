@@ -10,18 +10,18 @@
 
   <group ns="ccmslam">
 
-  <node pkg="tf" type="static_transform_publisher" name="linkS0_broadcaster" args="0 0 5 -1.571 0 -2 world odomS0 100" />
-  <node pkg="tf" type="static_transform_publisher" name="linkS1_broadcaster" args="0 0 5 -1.571 0 -2 world odomS1 100" />
-  <node pkg="tf" type="static_transform_publisher" name="linkS2_broadcaster" args="0 0 5 -1.571 0 -2 world odomS2 100" />
+  <node pkg="tf" type="static_transform_publisher" name="linkS0_broadcaster" args="0 0 10 -1.571 0 -1.571 world odomS0 100" />
+  <node pkg="tf" type="static_transform_publisher" name="linkS1_broadcaster" args="0 5 10 -1.571 0 -1.571 world odomS1 100" />
+  <!-- <node pkg="tf" type="static_transform_publisher" name="linkS2_broadcaster" args="0 0 5 -1.571 0 -2 world odomS2 100" />
   <node pkg="tf" type="static_transform_publisher" name="linkS3_broadcaster" args="0 0 5 -1.571 0 -2 world odomS3 100" />
-
+ -->
 <node pkg="ccmslam" type="ccmslamServerNode" name="ccmslamServerNode" args="$(find ccmslam)/conf/ORBvoc.txt" output="screen">
 
   <!-- +++++++++++++++++++++++++++++++++++++++++++++ -->
   <!-- !!! ADJUST INPUT TOPIC NAMES IF NECESSARY !!! -->
   <!-- +++++++++++++++++++++++++++++++++++++++++++++ -->
 
-  <param name="NumOfClients" type="int" value="4" />
+  <param name="NumOfClients" type="int" value="2" />
 
   <!-- Client 0 -->
 
@@ -37,15 +37,15 @@
 
   <!-- Client 2 -->
 
-  <param name="FrameId2" type="string" value="odomS2" />
+  <!-- <param name="FrameId2" type="string" value="odomS2" />
   <param name="~MapInTopicName2" type="string" value="MapOutClient2" unless="$(arg dist)" />
-  <param name="~MapInTopicName2" type="string" value="MapOutClient2Disturbed" if="$(arg dist)" />
+  <param name="~MapInTopicName2" type="string" value="MapOutClient2Disturbed" if="$(arg dist)" /> -->
 
   <!-- Client 3 -->
 
-  <param name="FrameId3" type="string" value="odomS3" />
+  <!-- <param name="FrameId3" type="string" value="odomS3" />
   <param name="~MapInTopicName3" type="string" value="MapOutClient3" unless="$(arg dist)" />
-  <param name="~MapInTopicName3" type="string" value="MapOutClient3Disturbed" if="$(arg dist)" />
+  <param name="~MapInTopicName3" type="string" value="MapOutClient3Disturbed" if="$(arg dist)" /> -->
 
 </node>
 

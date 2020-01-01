@@ -90,6 +90,7 @@ Tracking::Tracking(ccptr pCC, vocptr pVoc, viewptr pFrameViewer, mapptr pMap, db
         if(!mpViewer) cout << "mpViewer == nullptr" << endl;
         throw estd::infrastructure_ex();
     }
+    lost_tracking_counter = 0;
 }
 
 cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
@@ -186,8 +187,10 @@ void Tracking::Track()
         }
         else
         {
-            cout << "\033[1;35m!!! +++ Tracking: Lost +++ !!!\033[0m" << endl;
-            bOK = false;
+            if (lost_tracking_counter>0) {
+//                cout << "\033[1;35m!!! +++ Tracking: Lost +++ !!!\033[0m" << endl;
+                bOK = false;
+            }
         }
 
         mCurrentFrame->mpReferenceKF = mpReferenceKF;
@@ -195,10 +198,23 @@ void Tracking::Track()
         // If we have an initial estimation of the camera pose and matching. Track the local map.
         if(bOK) bOK = TrackLocalMap();
 
-        if(bOK)
-            mState = OK;
-        else
-            mState=LOST;
+        if(bOK) {
+            if (mState == OK) {
+//            mState = OK;
+                lost_tracking_counter = 0;
+            }
+        }
+        else {
+            if (mState == OK) {
+                lost_tracking_counter = lost_tracking_counter + 1;
+                cout << "\033[1;35m lost_tracking_counter=" << lost_tracking_counter << "\033[0m" << endl;
+                if (lost_tracking_counter > 300) {
+                    mState = LOST;
+                    cout << "\033[1;35m!!! +++ Tracking: Lost +++ !!!\033[0m" << endl;
+                }
+            }
+        }
+
 
         // Update drawer
         if(params::vis::mbActive) mpViewer->UpdateAndDrawFrame();
