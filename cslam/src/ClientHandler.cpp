@@ -190,9 +190,7 @@ void ClientHandler::InitializeClient()
     mptMapping.reset(new thread(&LocalMapping::RunClient,mpMapping));
     mptComm.reset(new thread(&Communicator::RunClient,mpComm));
     mptViewer.reset(new thread(&Viewer::RunClient,mpViewer));
-//    ptrPoseStamped.reset(new thread(&ClientHandler::PublishPoseThread, mpTracking));
     usleep(10000);
-
 }
 
 void ClientHandler::InitializeServer()
@@ -295,7 +293,6 @@ void ClientHandler::CamImgCb(sensor_msgs::ImageConstPtr pMsg)
         }
     }
 
-//    position_ = mpTracking->GrabImageMonocular(cv_ptr->image,cv_ptr->header.stamp.toSec());
     mpTracking->GrabImageMonocular(cv_ptr->image,cv_ptr->header.stamp.toSec());
 
     if (mpTracking->lost_tracking_counter == 0) {
@@ -304,12 +301,14 @@ void ClientHandler::CamImgCb(sensor_msgs::ImageConstPtr pMsg)
 }
 
 void ClientHandler::PublishPoseThread(){
+    float fScale = static_cast<float>(params::vis::mfScaleFactor);
     geometry_msgs::PoseStamped pose_msg;
     tf2::Quaternion tfQuaternion;
     geometry_msgs::Quaternion quat_msg;
     cv::Mat Tcw;
     cv::Mat Rcw;
-
+    cv::Mat tcw;
+    cv::Mat ow;
     pose_msg.header.frame_id = "world";
     while(1) {
 //        usleep(33333);
@@ -320,12 +319,12 @@ void ClientHandler::PublishPoseThread(){
 
 
                 Tcw = mpTracking->mCurrentFrame->mTcw;
-
                 if (Tcw.dims >= 2) {
 
 
                     Rcw = Tcw.rowRange(0, 3).colRange(0, 3);
-
+                    tcw = Tcw.rowRange(0,3).col(3);
+                    ow = -Rcw.t()*tcw;
                     double pitch = std::atan2(Rcw.at<float>(2, 0), Rcw.at<float>(2, 1));
                     double roll = std::acos(Rcw.at<float>(2, 2));
                     double yaw = -std::atan2(Rcw.at<float>(0, 2), Rcw.at<float>(1, 2));
@@ -334,9 +333,9 @@ void ClientHandler::PublishPoseThread(){
                     quat_msg = tf2::toMsg(tfQuaternion);
 
 
-                    pose_msg.pose.position.x = mpViewer->msg_point_out.z;
-                    pose_msg.pose.position.y = -mpViewer->msg_point_out.x;
-                    pose_msg.pose.position.z = -mpViewer->msg_point_out.y;
+                    pose_msg.pose.position.x = (fScale)*ow.at<float>(2);   // x = z
+                    pose_msg.pose.position.y = -(fScale)*ow.at<float>(0);  // y = -x
+                    pose_msg.pose.position.z = -(fScale)*ow.at<float>(1); // z = -y
                     pose_msg.header.stamp = ros::Time::now();
                     pose_msg.pose.orientation = quat_msg;
                     mPubPose.publish(pose_msg);
