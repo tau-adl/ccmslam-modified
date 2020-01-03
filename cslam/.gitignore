@@ -1,0 +1,8 @@
+.idea/
+conf/
+cmake-build-debug/
+CmakeLists.txt
+launch/
+output/
+package.xml
+thirdparty/
