@@ -5,3 +5,5 @@ cslam/thirdparty/g2o/build/
 cslam/thirdparty/g2o/lib/
 *~
 *.user
+licencse_gpl.txt
+cslam_msgs/
