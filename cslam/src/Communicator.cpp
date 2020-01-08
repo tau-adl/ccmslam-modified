@@ -94,6 +94,8 @@ Communicator::Communicator(ccptr pCC, vocptr pVoc, mapptr pMap, dbptr pKFDB)
         cout << "Client " << mClientId << " \033[1;31m!!!!! ERROR !!!!!\033[0m Communicator::Communicator(...): bad IN topic name" << endl;
         throw estd::infrastructure_ex();
     }
+
+    should_keep_local_mapping = true;
 }
 
 void Communicator::RunClient()
@@ -760,8 +762,8 @@ void Communicator::ProcessKfInClient()
             {
                 if(pMsg->mbPoseChanged)
                 {
-                    if (mpTracker->should_keep_local_mapping) {
-                        mpTracker->should_keep_local_mapping = false;
+                    if (should_keep_local_mapping) {
+                        should_keep_local_mapping = false;
                         cout << "Merge happened in server stopping local mapping" << endl;
                     }
                     pKF->UpdateFromMessage(pMsg);
@@ -981,8 +983,8 @@ void Communicator::ProcessMpInClient()
             {
                 if(pMsg->mbPoseChanged)
                 {
-                    if (mpTracker->should_keep_local_mapping) {
-                        mpTracker->should_keep_local_mapping = false;
+                    if (should_keep_local_mapping) {
+                        should_keep_local_mapping = false;
                         cout << "Merge happened in server stopping local mapping" << endl;
                     }
                     pMP->UpdateFromMessage(pMsg);

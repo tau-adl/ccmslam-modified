@@ -57,7 +57,6 @@
 #include <cslam/Database.h>
 #include <cslam/MapMatcher.h>
 #include <cslam/Mapping.h>
-#include <cslam/Tracking.h>
 
 //Msgs
 #include <ccmslam_msgs/Map.h>
@@ -90,7 +89,6 @@ public:
     typedef boost::shared_ptr<CentralControl> ccptr;
     typedef boost::shared_ptr<MapMatcher> matchptr;
     typedef boost::shared_ptr<LocalMapping> mappingptr;
-    typedef boost::shared_ptr<Tracking> trackptr;
 
     typedef pair<size_t,kfptr> AckPairKF;
     typedef pair<size_t,mpptr> AckPairMP;
@@ -106,7 +104,7 @@ public:
     struct mpcmp{
         bool operator() (const mpptr pA, const mpptr pB) const;
     };
-
+    bool should_keep_local_mapping;
 public:
     //---constructor---
     Communicator(ccptr pCC, vocptr pVoc, mapptr pMap, dbptr pKFDB);
@@ -117,7 +115,6 @@ public:
 
     //---getter/setter---
     void SetMapping(mappingptr pMapping) {mpMapping = pMapping;}
-    void SetTracker(trackptr pTracker){mpTracker = pTracker;}
     void ChangeMap(mapptr pMap){mpMap = pMap;}
     void SetMapMatcher(matchptr pMatch) {mpMapMatcher = pMatch;}
     dbptr GetDbPtr(){return mpDatabase;}
@@ -142,7 +139,6 @@ protected:
     dbptr mpDatabase;
     vocptr mpVoc;
     mappingptr mpMapping;
-    trackptr mpTracker;
     matchptr mpMapMatcher;
     size_t mClientId;
     const double mdPeriodicTime;

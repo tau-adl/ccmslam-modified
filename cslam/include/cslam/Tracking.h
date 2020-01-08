@@ -132,7 +132,7 @@ public:
 
     // number of times lost tracking in a row
     int lost_tracking_counter;
-    bool should_keep_local_mapping;
+
     void Reset();
 
 protected:
