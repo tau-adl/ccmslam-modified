@@ -760,7 +760,10 @@ void Communicator::ProcessKfInClient()
             {
                 if(pMsg->mbPoseChanged)
                 {
-
+                    if (mpTracker->should_keep_local_mapping) {
+                        mpTracker->should_keep_local_mapping = false;
+                        cout << "Merge happened in server stopping local mapping" << endl;
+                    }
                     pKF->UpdateFromMessage(pMsg);
 
                     pKF->UpdateConnections();
@@ -978,6 +981,10 @@ void Communicator::ProcessMpInClient()
             {
                 if(pMsg->mbPoseChanged)
                 {
+                    if (mpTracker->should_keep_local_mapping) {
+                        mpTracker->should_keep_local_mapping = false;
+                        cout << "Merge happened in server stopping local mapping" << endl;
+                    }
                     pMP->UpdateFromMessage(pMsg);
 
                     pMP->UpdateNormalAndDepth();

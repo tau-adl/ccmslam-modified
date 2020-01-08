@@ -184,6 +184,7 @@ void ClientHandler::InitializeClient()
     mpTracking->SetCommunicator(mpComm);
     mpTracking->SetLocalMapper(mpMapping);
     mpViewer->SetTracker(mpTracking);
+    mpComm->SetTracker(mpTracking);
     usleep(10000);
     //Launch Threads
     //Should no do that before, a fast system might already use a pointe before it was set -> segfault

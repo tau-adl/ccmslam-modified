@@ -91,6 +91,7 @@ Tracking::Tracking(ccptr pCC, vocptr pVoc, viewptr pFrameViewer, mapptr pMap, db
         throw estd::infrastructure_ex();
     }
     lost_tracking_counter = 0;
+    should_keep_local_mapping = true;
 }
 
 cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
@@ -246,7 +247,7 @@ void Tracking::Track()
             }
 
             // Check if we need to insert a new keyframe
-            if(NeedNewKeyFrame())
+            if(NeedNewKeyFrame() && should_keep_local_mapping)
                 CreateNewKeyFrame();
 
             // We allow points with high innovation (considererd outliers by the Huber Function)

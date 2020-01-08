@@ -1,7 +1,7 @@
 .idea/
 conf/
 cmake-build-debug/
-CmakeLists.txt
+CMakeLists.txt
 launch/
 output/
 package.xml
