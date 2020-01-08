@@ -188,7 +188,6 @@ void Tracking::Track()
         else
         {
             if (lost_tracking_counter>0) {
-//                cout << "\033[1;35m!!! +++ Tracking: Lost +++ !!!\033[0m" << endl;
                 bOK = false;
             }
         }
@@ -248,6 +247,7 @@ void Tracking::Track()
             // Check if we need to insert a new keyframe
             if(NeedNewKeyFrame() && mpComm->should_keep_local_mapping)
                 CreateNewKeyFrame();
+            //cout << "MPs=" << mpMap->MapPointsInMap()  << "KFs=" << mpMap->KeyFramesInMap() << endl;
 
             // We allow points with high innovation (considererd outliers by the Huber Function)
             // pass to the new keyframe, so that bundle adjustment will finally decide
