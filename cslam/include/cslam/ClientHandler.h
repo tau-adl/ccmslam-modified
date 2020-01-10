@@ -135,6 +135,9 @@ private:
     void InitializeClient();
     void InitializeServer();
 
+    void PublishPoseServer();
+    void PublishPose(cv::Mat Tcw);
+
     //infrastructure
     ros::Time current_frame_time_;
     ros::Publisher mPubPose;
@@ -163,7 +166,7 @@ private:
     threadptr mptComm;
     threadptr mptLoopClosure;
     threadptr mptViewer;
-    threadptr ptrPoseStamped;
+//    threadptr ptrPoseStamped;
 
     //data
     size_t mClientId;
