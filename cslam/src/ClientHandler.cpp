@@ -162,7 +162,7 @@ void ClientHandler::InitializeClient()
     ss = new stringstream;
     *ss << "PoseOut" << "Client" << mClientId;
     string PubPoseTopicName = ss->str();
-    mPubPose = mNh.advertise<geometry_msgs::PoseStamped>(PubPoseTopicName, 1);
+    mPubPose = mNh.advertise<geometry_msgs::PoseStamped>(PubPoseTopicName, 10);
 
     //+++++ Create Drawers. These are used by the Viewer +++++
     mpViewer.reset(new Viewer(mpMap,mpCC));
@@ -190,9 +190,8 @@ void ClientHandler::InitializeClient()
     mptMapping.reset(new thread(&LocalMapping::RunClient,mpMapping));
     mptComm.reset(new thread(&Communicator::RunClient,mpComm));
     mptViewer.reset(new thread(&Viewer::RunClient,mpViewer));
-//    ptrPoseStamped.reset(new thread(&ClientHandler::PublishPoseThread, mpTracking));
+    ptrPoseStamped.reset(new thread(&ClientHandler::PublishPoseThread, this));
     usleep(10000);
-
 }
 
 void ClientHandler::InitializeServer()
@@ -200,14 +199,14 @@ void ClientHandler::InitializeServer()
     cout << "Client " << mClientId << " --> Initialize Threads" << endl;
     std::stringstream* ss;
     ss = new stringstream;
-    *ss << "PoseOut" << "Server" << mClientId;
-    string PubPoseTopicName = ss->str();
+    *ss << "TransOut" << "Server" << mClientId;
+    string PubTransTopicName = ss->str();
 
     //+++++ Initialize the Loop Finder thread and launch +++++
     mpLoopFinder.reset(new LoopFinder(mpCC,mpKFDB,mpVoc,mpMap));
     mptLoopClosure.reset(new thread(&LoopFinder::Run,mpLoopFinder));
     usleep(10000);
-    mPubPose = mNh.advertise<geometry_msgs::PoseStamped>(PubPoseTopicName, 1);
+    mPubTrans = mNh.advertise<geometry_msgs::TransformStamped>(PubTransTopicName, 1);
     //+++++ Initialize the Local Mapping thread +++++
     mpMapping.reset(new LocalMapping(mpCC,mpMap,mpKFDB,mpViewer));
     mpMapping->SetLoopFinder(mpLoopFinder); //tempout
@@ -223,6 +222,7 @@ void ClientHandler::InitializeServer()
     //Should not do that before, a fast system might already use a pointer before it was set -> segfault
     mptMapping.reset(new thread(&LocalMapping::RunServer,mpMapping));
     mptComm.reset(new thread(&Communicator::RunServer,mpComm));
+    ptrTransformStamped.reset(new thread(&ClientHandler::PublishTransThread, this));
     usleep(10000);
     if(mpCC->mpCH == nullptr)
     {
@@ -370,10 +370,33 @@ void ClientHandler::PublishPoseThread(){
     }
 }
 
+// What about the scale?? What about the fact that it is the wrong coord system??
+void ClientHandler::PublishTransThread(){
+    tf2::Quaternion tfQuaternion;
+    g2o::Sim3 g2oS_wnewmap_wcurmap;
+    geometry_msgs::TransformStamped msgtf;
+    cv::Mat Tcw;
+    cv::Mat Rcw;
+    cv::Mat tcw;
+    cv::Mat ow;
+    msgtf.header.frame_id = "world";
+    msgtf.child_frame_id = "idk";
+    while(1) {
+        usleep(3333);
+        g2oS_wnewmap_wcurmap = mpCC->mg2oS_wcurmap_wclientmap;
 
-//void ClientHandler::PublishPoseServer(){
-//    this->PublishPose(mpMapping->mpCurrentKeyFrame->GetPose())
-//}
+        //I need to calculate the tfQuaternion from the g2oS_wnewmap_wcurmap
+        msgtf.transform.translation.x = g2oS_wnewmap_wcurmap.translation()[0];
+        msgtf.transform.translation.y = g2oS_wnewmap_wcurmap.translation()[1];
+        msgtf.transform.translation.z = g2oS_wnewmap_wcurmap.translation()[2];
+        msgtf.transform.rotation.w = g2oS_wnewmap_wcurmap.rotation().coeffs()[0];
+        msgtf.transform.rotation.x = g2oS_wnewmap_wcurmap.rotation().coeffs()[1];
+        msgtf.transform.rotation.y = g2oS_wnewmap_wcurmap.rotation().coeffs()[2];
+        msgtf.transform.rotation.z = g2oS_wnewmap_wcurmap.rotation().coeffs()[3];
+        msgtf.header.stamp = ros::Time::now();
+        mPubTrans.publish(msgtf);
+    }
+}
 
 
 void ClientHandler::PublishPose(cv::Mat Tcw){

@@ -56,6 +56,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <geometry_msgs/TransformStamped.h>
 
 //Thirdparty
 #include "thirdparty/g2o/g2o/types/types_seven_dof_expmap.h"
@@ -99,6 +100,7 @@ public:
     void SetMapMatcher(matchptr pMatch);
     void ChangeMap(mapptr pMap, g2o::Sim3 g2oS_wnewmap_wcurmap);
     void PublishPoseThread();
+    void PublishTransThread();
     commptr GetCommPtr(){return mpComm;}
     trackptr GetTrackPtr(){return mpTracking;}
     mappingptr GetMappingPtr(){return mpMapping;}
@@ -141,6 +143,7 @@ private:
     //infrastructure
     ros::Time current_frame_time_;
     ros::Publisher mPubPose;
+    ros::Publisher mPubTrans;
     ccptr mpCC;
     mapptr mpMap;
     dbptr mpKFDB;
@@ -166,8 +169,8 @@ private:
     threadptr mptComm;
     threadptr mptLoopClosure;
     threadptr mptViewer;
-//    threadptr ptrPoseStamped;
-
+    threadptr ptrPoseStamped;
+    threadptr ptrTransformStamped;
     //data
     size_t mClientId;
     g2o::Sim3 mg2oS_wcurmap_wclientmap; //transformation from map into client
