@@ -370,7 +370,6 @@ void ClientHandler::PublishPoseThread(){
     }
 }
 
-// What about the scale?? What about the fact that it is the wrong coord system??
 void ClientHandler::PublishTransThread(){
     tf2::Quaternion tfQuaternion;
     g2o::Sim3 g2oS_wnewmap_wcurmap;
@@ -381,14 +380,17 @@ void ClientHandler::PublishTransThread(){
     cv::Mat ow;
     msgtf.header.frame_id = "world";
     msgtf.child_frame_id = "idk";
+    double s;
     while(1) {
         usleep(3333);
         g2oS_wnewmap_wcurmap = mpCC->mg2oS_wcurmap_wclientmap;
+        s = g2oS_wnewmap_wcurmap.scale();
+        msgtf.transform.translation.x = g2oS_wnewmap_wcurmap.translation()[0] / s;
+        msgtf.transform.translation.y = g2oS_wnewmap_wcurmap.translation()[1] / s;
+        msgtf.transform.translation.z = g2oS_wnewmap_wcurmap.translation()[2] / s;
 
-        //I need to calculate the tfQuaternion from the g2oS_wnewmap_wcurmap
-        msgtf.transform.translation.x = g2oS_wnewmap_wcurmap.translation()[0];
-        msgtf.transform.translation.y = g2oS_wnewmap_wcurmap.translation()[1];
-        msgtf.transform.translation.z = g2oS_wnewmap_wcurmap.translation()[2];
+        // I can use this primitive Eigen::Matrix3d eigR = g2oCorrectedSiw.rotation().toRotationMatrix(); in order to get
+        // back to rotation coords and correct the same as we did in the Pose Publisher.
         msgtf.transform.rotation.w = g2oS_wnewmap_wcurmap.rotation().coeffs()[0];
         msgtf.transform.rotation.x = g2oS_wnewmap_wcurmap.rotation().coeffs()[1];
         msgtf.transform.rotation.y = g2oS_wnewmap_wcurmap.rotation().coeffs()[2];
