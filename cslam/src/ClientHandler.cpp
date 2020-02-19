@@ -370,6 +370,7 @@ void ClientHandler::PublishPoseThread(){
     }
 }
 
+
 void ClientHandler::PublishTransThread(){
     tf2::Quaternion tfQuaternion;
     g2o::Sim3 g2oS_wnewmap_wcurmap;
@@ -385,16 +386,36 @@ void ClientHandler::PublishTransThread(){
         usleep(3333);
         g2oS_wnewmap_wcurmap = mpCC->mg2oS_wcurmap_wclientmap;
         s = g2oS_wnewmap_wcurmap.scale();
-        msgtf.transform.translation.x = g2oS_wnewmap_wcurmap.translation()[0] / s;
-        msgtf.transform.translation.y = g2oS_wnewmap_wcurmap.translation()[1] / s;
-        msgtf.transform.translation.z = g2oS_wnewmap_wcurmap.translation()[2] / s;
+        msgtf.transform.translation.x = g2oS_wnewmap_wcurmap.translation()[2] * s;
+        msgtf.transform.translation.y = -g2oS_wnewmap_wcurmap.translation()[0] * s;
+        msgtf.transform.translation.z = -g2oS_wnewmap_wcurmap.translation()[1] * s;
 
-        // I can use this primitive Eigen::Matrix3d eigR = g2oCorrectedSiw.rotation().toRotationMatrix(); in order to get
-        // back to rotation coords and correct the same as we did in the Pose Publisher.
-        msgtf.transform.rotation.w = g2oS_wnewmap_wcurmap.rotation().coeffs()[0];
-        msgtf.transform.rotation.x = g2oS_wnewmap_wcurmap.rotation().coeffs()[1];
-        msgtf.transform.rotation.y = g2oS_wnewmap_wcurmap.rotation().coeffs()[2];
-        msgtf.transform.rotation.z = g2oS_wnewmap_wcurmap.rotation().coeffs()[3];
+        tf::Quaternion q(
+                g2oS_wnewmap_wcurmap.rotation().coeffs()[0],
+                g2oS_wnewmap_wcurmap.rotation().coeffs()[1],
+                g2oS_wnewmap_wcurmap.rotation().coeffs()[2],
+                g2oS_wnewmap_wcurmap.rotation().coeffs()[3]);
+
+        tf::Matrix3x3 m(q);
+        double roll, pitch, yaw;
+
+        // this suppose to be roll, so new_pitch = old_roll
+        // this suppose to be pitch, so new_yaw = old_pitch
+        // this suppose to be yaw, so new_roll = -old_yaw
+
+        m.getRPY(roll, pitch, yaw);
+
+
+        tfQuaternion.setRPY(-yaw, roll, pitch);
+
+
+        geometry_msgs::Quaternion quat_msg = tf2::toMsg(tfQuaternion);
+
+        msgtf.transform.rotation.w = quat_msg.w;
+        msgtf.transform.rotation.x = quat_msg.x;
+        msgtf.transform.rotation.y = quat_msg.y;
+        msgtf.transform.rotation.z = quat_msg.z;
+
         msgtf.header.stamp = ros::Time::now();
         mPubTrans.publish(msgtf);
     }
