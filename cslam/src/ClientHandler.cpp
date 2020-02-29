@@ -380,15 +380,17 @@ void ClientHandler::PublishTransThread(){
     cv::Mat tcw;
     cv::Mat ow;
     msgtf.header.frame_id = "world";
-    msgtf.child_frame_id = "idk";
     double s;
     while(1) {
         usleep(3333);
         g2oS_wnewmap_wcurmap = mpCC->mg2oS_wcurmap_wclientmap;
         s = g2oS_wnewmap_wcurmap.scale();
-        msgtf.transform.translation.x = g2oS_wnewmap_wcurmap.translation()[2] * s;
-        msgtf.transform.translation.y = -g2oS_wnewmap_wcurmap.translation()[0] * s;
-        msgtf.transform.translation.z = -g2oS_wnewmap_wcurmap.translation()[1] * s;
+        std::ostringstream ss;
+        ss << s;
+        msgtf.child_frame_id = (ss.str());
+        msgtf.transform.translation.x = g2oS_wnewmap_wcurmap.translation()[2];
+        msgtf.transform.translation.y = -g2oS_wnewmap_wcurmap.translation()[0];
+        msgtf.transform.translation.z = -g2oS_wnewmap_wcurmap.translation()[1];
 
         tf::Quaternion q(
                 g2oS_wnewmap_wcurmap.rotation().coeffs()[0],
