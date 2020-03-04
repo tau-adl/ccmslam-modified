@@ -386,8 +386,8 @@ void ClientHandler::PublishTransThread(){
         g2oS_wnewmap_wcurmap = mpCC->mg2oS_wcurmap_wclientmap;
         s = g2oS_wnewmap_wcurmap.scale();
         std::ostringstream ss;
+        ss << " scale: ";
         ss << s;
-        msgtf.child_frame_id = (ss.str());
         msgtf.transform.translation.x = g2oS_wnewmap_wcurmap.translation()[2];
         msgtf.transform.translation.y = -g2oS_wnewmap_wcurmap.translation()[0];
         msgtf.transform.translation.z = -g2oS_wnewmap_wcurmap.translation()[1];
@@ -406,6 +406,21 @@ void ClientHandler::PublishTransThread(){
         // this suppose to be yaw, so new_roll = -old_yaw
 
         m.getRPY(roll, pitch, yaw);
+        ss << " roll: ";
+        ss << roll;
+        ss << " pitch: ";
+        ss << pitch;
+        ss << " yaw: ";
+        ss << yaw;
+        ss << " q0: ";
+        ss << g2oS_wnewmap_wcurmap.rotation().coeffs()[0];
+        ss << " q1: ";
+        ss << g2oS_wnewmap_wcurmap.rotation().coeffs()[1];
+        ss << " q2: ";
+        ss << g2oS_wnewmap_wcurmap.rotation().coeffs()[2];
+        ss << " q3: ";
+        ss << g2oS_wnewmap_wcurmap.rotation().coeffs()[3];
+        msgtf.child_frame_id = (ss.str());
 
 
         tfQuaternion.setRPY(-yaw, roll, pitch);
